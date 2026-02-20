@@ -4,6 +4,7 @@ import cors from 'cors';
 import serverConfig from './config/server.config.js';
 import { connectToDatabase } from './db/index.js';
 import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(cors());
 
 // Mount the routes
 app.use(userRoutes);
+app.use(authRoutes);
 
 app.get('/', (_req, res) => {
   res.send('Hello Express!')
