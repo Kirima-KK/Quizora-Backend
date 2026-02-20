@@ -2,18 +2,20 @@ import express from 'express';
 import cors from 'cors';
 
 import serverConfig from './config/server.config.js';
-import { connectToDb } from './db/index.js';
-// import routes from './routes';
+import { connectToDatabase } from './db/index.js';
+import userRoutes from './routes/user.route.js';
+
 const app = express()
 
 // initialize DB
-connectToDb();
+connectToDatabase();
 
 app.use(express.json());
 app.use(cors());
 
 // Mount the routes
-// app.use(routes);
+app.use(userRoutes);
+
 app.get('/', (_req, res) => {
   res.send('Hello Express!')
 })
