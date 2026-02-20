@@ -25,6 +25,11 @@ class AuthController {
       }
     });
   }
+
+  logout = async (req, res, next) => {
+    res.cookie('session', '', { expires: new Date(0) });
+    return res.status(204).send();
+  }
 }
 
 export default AuthController;
