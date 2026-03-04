@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import serverConfig from './config/server.config.js';
 import { connectToDatabase } from './db/index.js';
@@ -13,6 +14,7 @@ connectToDatabase();
 
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 // Mount the routes
 app.use(userRoutes);

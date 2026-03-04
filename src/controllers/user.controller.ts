@@ -26,6 +26,16 @@ class UserController {
       return next(err);
     }
   }
+
+  getCurrentUser = async (req, res, next) => {
+    try {
+      const session = req.cookies.session;
+      const user = await userService.getCurrentUser(session);
+      return res.status(200).json(user);
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
 
 export default UserController;
