@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt';
 import authConfig from "../config/auth.config.js";
 import jwt from 'jsonwebtoken';
 import { LoginInfo, RegisterInfo } from "../models/auth.model.js";
-import InvalidCredentialError from "../errors/invalid-credential-error.js";
-import UserAlreadyExistError from "../errors/user-already-exist-error.js";
+import InvalidCredentialError from "../errors/invalid-credential.error.js";
+import UserAlreadyExistError from "../errors/user-already-exist.error.js";
 
 class AuthService {
   register = async (addedUser: RegisterInfo) => {

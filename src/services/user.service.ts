@@ -1,9 +1,9 @@
 import { connectToDatabase } from "../db/index.js";
 import mongoDB from '../config/db.config.js';
 import { verifyJwt } from "../utils/jwt-utils.js";
-import UnauthenticatedError from "../errors/unauthenticated-error.js";
+import UnauthenticatedError from "../errors/unauthenticated.error.js";
 import { ObjectId } from "mongodb";
-import UserNotFoundError from "../errors/user-not-found-error.js";
+import UserNotFoundError from "../errors/user-not-found.error.js";
 
 class UserService {
   getAllUsers = async () => {
