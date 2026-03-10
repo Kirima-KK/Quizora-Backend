@@ -8,4 +8,8 @@ router.post('/api/quiz-history', (req, res, next) => {
   quizHistoryController.postNewQuizHistory(req, res, next);
 });
 
+router.get('/api/quiz-history/:id', (req, res, next) => {
+  quizHistoryController.getQuizHistoryByUserId(req, res, next);
+})
+
 export default router;

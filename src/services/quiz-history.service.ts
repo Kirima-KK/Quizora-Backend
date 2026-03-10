@@ -45,6 +45,14 @@ class QuizHistoryService {
 
     return newHistory;
   }
+
+  getQuizHistoryByUserId = async (params: { id: string }) => {
+    const db = await connectToDatabase();
+    const collection = await db.collection(`${mongoDB.quizHistoryCollectionName}`);
+
+    const histories = await collection.find({ userId: params.id }).toArray();
+    return histories;
+  }
 }
 
 export default QuizHistoryService;

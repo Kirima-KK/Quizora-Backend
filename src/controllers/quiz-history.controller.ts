@@ -8,7 +8,7 @@ class QuizHistoryController {
       const newHistory = await quizHistoryService.postNewQuizHistory(req.body);
 
       return res.status(200).json({
-        message: 'Save new quiz history success.', 
+        message: 'Save new quiz history success.',
         data: newHistory,
       });
     } catch (err) {
@@ -16,6 +16,17 @@ class QuizHistoryController {
     }
   }
 
+  getQuizHistoryByUserId = async (req, res, next) => {
+    try {
+      const quizHistories = await quizHistoryService.getQuizHistoryByUserId(req.params);
+
+      return res.status(200).json({
+        quizHistory: quizHistories
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default QuizHistoryController;
