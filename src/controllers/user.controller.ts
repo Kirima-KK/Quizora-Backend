@@ -29,6 +29,7 @@ class UserController {
 
   getCurrentUser = async (req, res, next) => {
     try {
+      // Get current user from the cookie
       const session = req.cookies.session;
       const user = await userService.getCurrentUser(session);
       return res.status(200).json(user);
