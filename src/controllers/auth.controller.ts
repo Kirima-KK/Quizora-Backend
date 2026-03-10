@@ -14,6 +14,7 @@ class AuthController {
         lastName: req.body.lastName,
       };
 
+      // Registered info validation
       if (!result.email || !result.password) return res.status(400).json({ message: "Bad Request" });
 
       const token = await authService.register(result);
@@ -36,6 +37,7 @@ class AuthController {
 
       const token = await authService.login(result);
 
+      // Save user session token to the cookie
       res.cookie('session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -56,6 +58,7 @@ class AuthController {
   }
 
   logout = async (req, res, next) => {
+    // Remove user session token from the cookie
     res.cookie('session', '', { expires: new Date(0) });
     return res.status(204).send();
   }

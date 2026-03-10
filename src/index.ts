@@ -8,6 +8,7 @@ import { connectToDatabase } from './db/index.js';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import quizRoutes from './routes/quiz.route.js';
+import quizHistoryRoutes from './routes/quiz-history.route.js';
 
 import ErrorHandler from './middleware/errors-handler.middleware.js';
 
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(authRoutes);
 app.use(userRoutes);
 app.use(quizRoutes);
+app.use(quizHistoryRoutes);
 
 // Error handler middleware
 app.use(ErrorHandler);

@@ -7,6 +7,7 @@ const mongoDB = {
   dbName: process.env.DB_NAME,
   userCollectionName: process.env.USER_COLLECTION_NAME,
   quizCollectionName: process.env.QUIZ_COLLECTION_NAME,
+  quizHistoryCollectionName: process.env.QUIZ_HISTORY_COLLECTION_NAME,
   itemPerPage: process.env.ITEMS_PER_PAGE,
   options: {},
 };

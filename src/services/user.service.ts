@@ -23,6 +23,7 @@ class UserService {
   };
 
   getCurrentUser = async (session) => {
+    // Current session token validation
     const payload = session ? await verifyJwt(session) : null;
     if (!payload) {
       throw new UnauthenticatedError("Unauthenticated.", 401);

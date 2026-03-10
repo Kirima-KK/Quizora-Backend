@@ -15,11 +15,13 @@ class QuizService {
     const total = await collection.countDocuments({});
     const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
+    // Find quiz in the current page
     const quizePage = await collection.find({})
       .skip(offset)
       .limit(ITEMS_PER_PAGE)
       .toArray();
 
+    // Quizes validation
     if (!quizePage) throw new QuizNotFoundError("Quizes not found.", 404);
 
     return { quizes: quizePage, totalPages: totalPages };
@@ -29,6 +31,7 @@ class QuizService {
     const db = await connectToDatabase();
     const collection = db.collection(`${mongoDB.quizCollectionName}`);
 
+    // Find quiz by object id
     const quiz = await collection.findOne({ _id: new ObjectId(params.id) });
     if (!quiz) throw new QuizNotFoundError("Quizes not found.", 404);
 
