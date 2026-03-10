@@ -17,6 +17,16 @@ class QuizController {
       next(err);
     }
   }
+
+  getQuizById = async (req, res, next) => {
+    try {
+      const quiz = await quizService.getQuizById(req.params);
+
+      return res.status(200).json(quiz);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default QuizController;
