@@ -1,5 +1,3 @@
-import { connectToDatabase } from "../db/index.js";
-import { QuizInfo } from "../utils/quiz.type.js";
 import mongoDB from "../config/db.config.js";
 import QuizNotFoundError from "../errors/quiz-not-found.error.js";
 import { ObjectId } from "mongodb";
@@ -17,7 +15,6 @@ class QuizService {
     const quizePage = await Quiz.find({})
       .skip(offset)
       .limit(ITEMS_PER_PAGE)
-      // .toArray();
 
     // Quizes validation
     if (!quizePage) throw new QuizNotFoundError("Quizes not found.", 404);
