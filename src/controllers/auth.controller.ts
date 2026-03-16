@@ -1,5 +1,5 @@
 import authConfig from "../config/auth.config.js";
-import { LoginInfo, RegisterInfo } from "../models/auth.model.js";
+import { LoginInfo, RegisterInfo } from "../utils/auth.type.js";
 import AuthService from "../services/auth.service.js";
 
 const authService = new AuthService();

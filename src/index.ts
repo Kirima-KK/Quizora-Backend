@@ -24,10 +24,10 @@ app.use(cors());
 app.use(cookieParser());
 
 // Mount the routes
-// app.use(authRoutes);
+app.use(authRoutes);
 app.use(userRoutes);
-// app.use(quizRoutes);
-// app.use(quizHistoryRoutes);
+app.use(quizRoutes);
+app.use(quizHistoryRoutes);
 
 // Error handler middleware
 app.use(ErrorHandler);

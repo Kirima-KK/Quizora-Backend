@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import mongoDB from "../config/db.config.js";
 import { connectToDatabase } from "../db/index.js";
 import UserNotFoundError from "../errors/user-not-found.error.js";
-import { QuizHistoryItem, UserQuizAnswer } from "../models/quiz-history.model.js";
+import { QuizHistoryItem, UserQuizAnswer } from "../utils/quiz-history.type.js";
 
 class QuizHistoryService {
   postNewQuizHistory = async (data: QuizHistoryItem) => {

@@ -1,20 +1,42 @@
-export interface Choice {
-  id: number;
-  choice: string;
-}
+import mongoose from "mongoose";
 
-export interface Question {
-  id: number;
-  question: string;
-  choices: Choice[];
-  answer: number;
-}
+const choiceSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+  },
+  choice: {
+    type: String,
+  },
+});
 
-export interface QuizInfo {
-  _id: string;
-  name: string;
-  description: string;
-  image: string;
-  passPoint: number;
-  questions: Question[];
-}
+const questionSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+  },
+  question: {
+    type: String,
+  },
+  choices: {
+    type: [choiceSchema],
+  },
+});
+const quizSchema = new mongoose.Schema({
+  name: {
+    type: String,
+  },
+  description: {
+    type: String,
+  },
+  image: {
+    type: String,
+  },
+  passPoint: {
+    type: Number,
+  },
+  questions: {
+    type: [questionSchema],
+  }
+});
+
+const Quiz = mongoose.model("Quiz", quizSchema, "quizes");
+export default Quiz;

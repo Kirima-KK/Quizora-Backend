@@ -1,18 +1,13 @@
-import mongoDB from "../config/db.config.js";
-import { connectToDatabase } from "../db/index.js";
 import bcrypt from 'bcrypt';
 import authConfig from "../config/auth.config.js";
 import jwt from 'jsonwebtoken';
-import { LoginInfo, RegisterInfo } from "../models/auth.model.js";
+import { LoginInfo, RegisterInfo } from "../utils/auth.type.js";
 import InvalidCredentialError from "../errors/invalid-credential.error.js";
 import UserAlreadyExistError from "../errors/user-already-exist.error.js";
 import User from "../models/user.model.js";
 
 class AuthService {
   register = async (addedUser: RegisterInfo) => {
-    // const db = await connectToDatabase();
-    // const collection = db.collection(`${mongoDB.userCollectionName}`);
-
     // Check for user existence
     const user = await User.findOne({ email: addedUser.email });
     if (user) {
@@ -51,9 +46,6 @@ class AuthService {
   }
 
   login = async (currentUser: LoginInfo) => {
-    // const db = await connectToDatabase();
-    // const collection = db.collection(`${mongoDB.userCollectionName}`);
-
     // Check for user existence
     const user = await User.findOne({ email: currentUser.email });
     if (!user) throw new InvalidCredentialError("Invalid Credentials.", 401);
