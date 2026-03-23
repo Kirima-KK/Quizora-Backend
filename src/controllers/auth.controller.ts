@@ -12,6 +12,7 @@ class AuthController {
         password: req.body.password,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        role: req.body.role,
       };
 
       // Registered info validation

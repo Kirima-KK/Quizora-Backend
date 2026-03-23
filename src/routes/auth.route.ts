@@ -1,5 +1,6 @@
 import express from 'express';
 import AuthController from '../controllers/auth.controller.js';
+import { verifyToken } from '../middleware/auth.middleware.js';
 
 /**
  * @swagger
@@ -28,7 +29,7 @@ router.post('/api/login', (req, res, next) => {
   authController.login(req, res, next);
 });
 
-router.post('/api/logout', (req, res, next) => {
+router.post('/api/logout', verifyToken, (req, res, next) => {
   authController.logout(req, res, next);
 });
 

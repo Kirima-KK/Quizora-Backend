@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    enum: ['admin', 'user'],
+    enum: ['ADMIN', 'MANAGER', 'USER'],
   },
 }, {
   timestamps: true,

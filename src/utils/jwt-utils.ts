@@ -4,6 +4,7 @@ import authConfig from '../config/auth.config.js';
 export type JwtPayload = {
   userId: string;
   email: string;
+  role: string;
   iat?: number;
   exp?: number;
 };

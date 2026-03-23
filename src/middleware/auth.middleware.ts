@@ -7,5 +7,6 @@ export const verifyToken = async (req, res, next) => {
     return res.status(401).json({ message: "Unauthenticated" });
   }
 
+  req.user = payload.payload;
   next();
 }

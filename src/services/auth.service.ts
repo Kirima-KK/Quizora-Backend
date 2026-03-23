@@ -23,6 +23,7 @@ class AuthService {
       email: addedUser.email,
       firstName: addedUser.firstName,
       lastName: addedUser.lastName,
+      role: addedUser.role,
       password: hash,
       createdAt: new Date()
     });
@@ -32,7 +33,8 @@ class AuthService {
     // Signed JWT token
     const payload = {
       user: {
-        id: newUser._id
+        id: newUser._id,
+        role: newUser.role,
       }
     };
 
