@@ -1,17 +1,13 @@
 import { ObjectId } from "mongodb";
-import mongoDB from "../config/db.config.js";
-import { connectToDatabase } from "../db/index.js";
 import UserNotFoundError from "../errors/user-not-found.error.js";
-import { QuizHistoryItem, UserQuizAnswer } from "../models/quiz-history.model.js";
+import { QuizHistoryItem, UserQuizAnswer } from "../utils/quiz-history.type.js";
+import QuizHistory from "../models/quiz-history.model.js";
+import User from "../models/user.model.js";
 
 class QuizHistoryService {
   postNewQuizHistory = async (data: QuizHistoryItem) => {
-    const db = await connectToDatabase();
-    const quizHistoryCollection = await db.collection(`${mongoDB.quizHistoryCollectionName}`);
-    const userCollection = await db.collection(`${mongoDB.userCollectionName}`);
-
     // Added new quiz history to database
-    const newHistory = await quizHistoryCollection.insertOne({
+    const newHistory = new QuizHistory({
       quizId: data.quizId,
       userId: data.userId,
       answers: data.answers,
@@ -20,8 +16,10 @@ class QuizHistoryService {
       quizStatus: data.quizStatus
     });
 
+    await newHistory.save();
+
     // Updated user data
-    const user = await userCollection.findOne({ _id: new ObjectId(data.userId) });
+    const user = await User.findOne({ _id: new ObjectId(data.userId) });
     if (!user) {
       throw new UserNotFoundError("User not found", 404);
     }
@@ -32,7 +30,7 @@ class QuizHistoryService {
       return answer.isCorrect ? acc + 1 : acc;
     }, 0);
 
-    const updatedUser = await userCollection.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { _id: new ObjectId(data.userId) },
       {
         $inc: {
@@ -47,10 +45,7 @@ class QuizHistoryService {
   }
 
   getQuizHistoryByUserId = async (params: { id: string }) => {
-    const db = await connectToDatabase();
-    const collection = await db.collection(`${mongoDB.quizHistoryCollectionName}`);
-
-    const histories = await collection.find({ userId: params.id }).toArray();
+    const histories = await QuizHistory.find({ userId: params.id });
     return histories;
   }
 }

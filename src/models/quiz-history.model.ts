@@ -1,14 +1,37 @@
-export interface UserQuizAnswer {
-  id: number;
-  choice: number;
-  isCorrect: boolean;
-}
+import mongoose from "mongoose";
 
-export interface QuizHistoryItem {
-  quizId: string;
-  userId: string;
-  answers: UserQuizAnswer[];
-  submittedDate: string;
-  score: number;
-  quizStatus: boolean;
-}
+const answerSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+  },
+  choice: {
+    type: Number,
+  },
+  isCorrect: {
+    type: Boolean,
+  }
+});
+
+const quizHistorySchema = new mongoose.Schema({
+  quizId: {
+    type: String,
+  },
+  userId: {
+    type: String,
+  },
+  answers: {
+    type: [answerSchema],
+  },
+  submittedDate: {
+    type: Date,
+  },
+  score: {
+    type: Number,
+  },
+  quizStatus: {
+    type: Boolean,
+  },
+});
+
+const QuizHistory = mongoose.model("QuizHistory", quizHistorySchema, "quiz-history");
+export default QuizHistory;
