@@ -1,5 +1,6 @@
 import express from 'express';
 import UserController from '../controllers/user.controller.js';
+import { verifyToken } from '../middleware/auth.middleware.js';
 
 /**
  * @swagger
@@ -14,15 +15,15 @@ import UserController from '../controllers/user.controller.js';
 const router = express.Router();
 const userController = new UserController();
 
-router.get('/api/user', (req, res, next) => {
+router.get('/api/user', verifyToken, (req, res, next) => {
   userController.getAllUsers(req, res, next);
 });
 
-router.get('/api/user/:email', (req, res, next) => {
+router.get('/api/user/:email', verifyToken, (req, res, next) => {
   userController.getUserByEmail(req, res, next);
 });
 
-router.get('/api/current-user', (req, res, next) => {
+router.get('/api/current-user', verifyToken, (req, res, next) => {
   userController.getCurrentUser(req, res, next);
 });
 
