@@ -1,6 +1,7 @@
 import authConfig from "../config/auth.config.js";
 import { LoginInfo, RegisterInfo } from "../utils/auth.type.js";
 import AuthService from "../services/auth.service.js";
+import serverConfig from "../config/server.config.js";
 
 const authService = new AuthService();
 
@@ -41,8 +42,8 @@ class AuthController {
       // Save user session token to the cookie
       res.cookie('session', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax', // Prevent CSRF attacks
+        secure: true,
+        sameSite: 'none', 
         maxAge: Number(authConfig.jwtTokenExpires),
         path: '/'
       });
