@@ -50,11 +50,9 @@ class AuthService {
   login = async (currentUser: LoginInfo) => {
     // Check for user existence
     const user = await User.findOne({ email: currentUser.email });
-    console.log(`Login Service-user: ${user} ${currentUser.email}`);
     if (!user) throw new InvalidCredentialError("Invalid Credentials.", 401);
     
     const result = await bcrypt.compare(currentUser.password, user.password);
-    console.log(`Login Service-result: ${result}`);
     if (!result) {
       throw new InvalidCredentialError("Invalid Credentials.", 401);
     }
