@@ -16,12 +16,6 @@ import ErrorHandler from './middleware/errors-handler.middleware.js';
 
 const app = express()
 
-const allowedOrigins = [
-  'https://quizora-backend.vercel.app/',
-  'https://quizora-seven.vercel.app/',
-  /\.vercel\.app$/ // This regex allows all Vercel preview subdomains
-];
-
 // initialize DB
 await connectToDatabase();
 
@@ -31,7 +25,7 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
 
-    const isAllowed = allowedOrigins.some((allowed) => {
+    const isAllowed = serverConfig.allowedOrigins.some((allowed) => {
       return allowed instanceof RegExp ? allowed.test(origin) : allowed === origin;
     });
 
