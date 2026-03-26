@@ -19,7 +19,6 @@ const app = express()
 // initialize DB
 await connectToDatabase();
 
-app.use(express.json());
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl)
@@ -37,6 +36,7 @@ app.use(cors({
   },
   credentials: true,
 }));
+app.use(express.json());
 app.use(cookieParser());
 
 // Mount the routes
