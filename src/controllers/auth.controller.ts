@@ -1,8 +1,6 @@
 import authConfig from "../config/auth.config.js";
 import { LoginInfo, RegisterInfo } from "../utils/auth.type.js";
 import AuthService from "../services/auth.service.js";
-import serverConfig from "../config/server.config.js";
-
 const authService = new AuthService();
 
 class AuthController {
@@ -43,7 +41,7 @@ class AuthController {
       res.cookie('session', token, {
         httpOnly: true,
         secure: true,
-        sameSite: 'none', 
+        sameSite: 'none',
         maxAge: Number(authConfig.jwtTokenExpires),
         path: '/'
       });
@@ -61,7 +59,13 @@ class AuthController {
 
   logout = async (req, res, next) => {
     // Remove user session token from the cookie
-    res.cookie('session', '', { expires: new Date(0) });
+    res.cookie('session', '', {
+      expires: new Date(0),
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/'
+    });
     return res.status(204).send();
   }
 }
