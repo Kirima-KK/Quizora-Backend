@@ -4,17 +4,17 @@ import { ObjectId } from "mongodb";
 import Quiz from "../models/quiz.model.js";
 
 class QuizService {
-  getAllQuiz = async (page: number = 1) => {
+  getAllQuiz = async (page: number) => {
     // Calculated quiz pages
-    const ITEMS_PER_PAGE = Number(mongoDB.itemPerPage);
-    const offset = ((page - 1) * ITEMS_PER_PAGE);
+    const itemPerPage = page ? Number(mongoDB.itemPerPage) : 0;
+    const offset = ((page - 1) * itemPerPage);
     const total = await Quiz.countDocuments({});
-    const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(total / itemPerPage);
 
     // Find quiz in the current page
     const quizePage = await Quiz.find({})
       .skip(offset)
-      .limit(ITEMS_PER_PAGE)
+      .limit(itemPerPage)
 
     // Quizes validation
     if (!quizePage) throw new QuizNotFoundError("Quizes not found.", 404);

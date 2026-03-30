@@ -3,6 +3,7 @@ import UserNotFoundError from "../errors/user-not-found.error.js";
 import { QuizHistoryItem, UserQuizAnswer } from "../utils/quiz-history.type.js";
 import QuizHistory from "../models/quiz-history.model.js";
 import User from "../models/user.model.js";
+import mongoDB from "../config/db.config.js";
 
 class QuizHistoryService {
   postNewQuizHistory = async (data: QuizHistoryItem) => {
@@ -46,7 +47,11 @@ class QuizHistoryService {
 
   getQuizHistoryByUserId = async (params: { id: string }) => {
     const histories = await QuizHistory.find({ userId: params.id });
-    return histories;
+    const itemPerPage = Number(mongoDB.itemPerPage);
+    const historyQuizIds = [...new Set(histories.map(history => history.quizId))];
+    const totalPages = Math.ceil(historyQuizIds.length / itemPerPage);
+
+    return { quizHistory: histories, totalPages: totalPages };
   }
 }
 
