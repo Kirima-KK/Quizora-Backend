@@ -28,6 +28,8 @@ app.use(cors({
       return allowed instanceof RegExp ? allowed.test(origin) : allowed === origin;
     });
 
+    console.log(`CORS Check: Origin [${origin}] | Result: [${isAllowed}]`);
+
     if (isAllowed) {
       callback(null, true);
     } else {
