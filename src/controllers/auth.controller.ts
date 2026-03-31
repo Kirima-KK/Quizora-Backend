@@ -44,7 +44,7 @@ class AuthController {
         sameSite: 'none',
         maxAge: Number(authConfig.jwtTokenExpires),
         path: '/',
-        domain: 'https://quizora-7gaz70rzb-kirimas-projects.vercel.app',
+        domain: '.vercel.app',
       });
 
       return res.status(200).json({
