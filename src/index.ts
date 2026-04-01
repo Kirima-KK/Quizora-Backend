@@ -16,9 +16,6 @@ import ErrorHandler from './middleware/errors-handler.middleware.js';
 
 const app = express()
 
-// initialize DB
-await connectToDatabase();
-
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl)
@@ -38,6 +35,10 @@ app.use(cors({
   },
   credentials: true,
 }));
+
+// initialize DB
+await connectToDatabase();
+
 app.use(express.json());
 app.use(cookieParser());
 
