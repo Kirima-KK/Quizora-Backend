@@ -44,6 +44,7 @@ class AuthController {
         sameSite: 'none',
         maxAge: Number(authConfig.jwtTokenExpires),
         path: '/',
+        domain: '.vercel.app',
       });
 
       return res.status(200).json({
