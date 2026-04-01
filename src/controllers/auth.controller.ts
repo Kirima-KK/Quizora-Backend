@@ -37,15 +37,22 @@ class AuthController {
 
       const token = await authService.login(result);
 
-      // Save user session token to the cookie
-      res.cookie('session', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: Number(authConfig.jwtTokenExpires),
-        path: '/',
-        domain: '.vercel.app',
-      });
+      const frontendOrigin = req.headers.origin;
+      if (frontendOrigin) {
+        const url = new URL(frontendOrigin);
+        const frontendHostname = url.hostname
+
+        console.log(`DEBUG:frontendOrigin: ${frontendOrigin}`);
+        // Save user session token to the cookie
+        res.cookie('session', token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: Number(authConfig.jwtTokenExpires),
+          path: '/',
+          domain: frontendHostname,
+        });
+      }
 
       return res.status(200).json({
         message: "Login successful",
