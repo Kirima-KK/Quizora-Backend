@@ -16,25 +16,28 @@ import ErrorHandler from './middleware/errors-handler.middleware.js';
 
 const app = express()
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
 
-    const isAllowed = serverConfig.allowedOrigins.some((allowed) => {
-      return allowed instanceof RegExp ? allowed.test(origin) : allowed === origin;
-    });
+  // Check if the origin matches Vercel or Localhost
+  const isVercel = origin && /^https:\/\/.*\.vercel\.app$/.test(origin);
+  const isLocal = origin === 'http://localhost:3000';
 
-    console.log(`CORS Check: Origin [${origin}] | Result: [${isAllowed}]`);
+  if (isVercel || isLocal) {
+    // Set the headers
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+  }
 
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
+  // handle the Preflight request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  next();
+});
 
 // initialize DB
 await connectToDatabase();
