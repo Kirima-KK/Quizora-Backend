@@ -35,14 +35,6 @@ class AuthController {
         password: password
       }
 
-      const frontendOrigin = req.headers.origin;
-      let cookieDomain = '';
-
-      if (frontendOrigin) {
-        const url = new URL(frontendOrigin);
-        cookieDomain = url.hostname;
-      }
-
       const token = await authService.login(result);
 
       // Save user session token to the cookie
@@ -52,7 +44,6 @@ class AuthController {
         sameSite: 'none',
         maxAge: Number(authConfig.jwtTokenExpires),
         path: '/',
-        domain: cookieDomain,
       });
 
       return res.status(200).json({
@@ -67,14 +58,6 @@ class AuthController {
   }
 
   logout = async (req, res, next) => {
-    const frontendOrigin = req.headers.origin;
-    let cookieDomain = '';
-
-    if (frontendOrigin) {
-      const url = new URL(frontendOrigin);
-      cookieDomain = url.hostname;
-    }
-
     // Remove user session token from the cookie
     res.cookie('session', '', {
       expires: new Date(0),
@@ -82,7 +65,6 @@ class AuthController {
       secure: true,
       sameSite: 'none',
       path: '/',
-      domain: cookieDomain,
     });
     return res.status(204).send();
   }
