@@ -1,13 +1,6 @@
 import { jwtVerify } from 'jose';
 import authConfig from '../config/auth.config.js';
-
-export type JwtPayload = {
-  userId: string;
-  email: string;
-  role: string;
-  iat?: number;
-  exp?: number;
-};
+import { JwtPayload } from '../interfaces/auth.interface.js';
 
 export async function verifyJwt(token: string) {
   try {

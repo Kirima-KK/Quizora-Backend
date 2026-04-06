@@ -1,8 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc from 'swagger-jsdoc';
 
 import serverConfig from './config/server.config.js';
 import { connectToDatabase } from './db/index.js';
@@ -50,36 +48,6 @@ app.use(quizHistoryRoutes);
 
 // Error handler middleware
 app.use(ErrorHandler);
-
-// Swagger definition
-// const swaggerOptions = {
-//   definition: {
-//     openapi: '3.0.0',
-//     info: {
-//       title: 'Quizora API',
-//       version: '1.0.0',
-//       description: 'Quizora API documentation using Swagger',
-//     },
-//     servers: [
-//       {
-//         url: `http://localhost:${serverConfig.port}`,
-//       },
-//     ],
-//     components: {
-//       // securitySchemes: {
-//       //   bearerAuth: {
-//       //     type: 'http',
-//       //     scheme: 'bearer',
-//       //     bearerFormat: 'JWT',
-//       //   },
-//       // },
-//     },
-//   },
-//   apis: ['./routes/*.ts'],
-// };
-
-// const swaggerDocs = swaggerJSDoc(swaggerOptions);
-// app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use('/', (req, res, next) => {
   res.send("Hello Quizora!");

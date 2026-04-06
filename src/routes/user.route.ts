@@ -1,7 +1,8 @@
-import express from 'express';
+import express, { Request } from 'express';
 import UserController from '../controllers/user.controller.js';
 import { verifyToken } from '../middleware/auth.middleware.js';
 import { roleAuth } from '../middleware/role-auth.middleware.js';
+import { UserParams } from '../interfaces/user.interface.js';
 
 /**
  * @swagger
@@ -20,7 +21,7 @@ router.get('/api/user', verifyToken, roleAuth("ADMIN"), (req, res, next) => {
   userController.getAllUsers(req, res, next);
 });
 
-router.get('/api/user/:email', verifyToken, roleAuth("ADMIN"), (req, res, next) => {
+router.get('/api/user/:email', verifyToken, roleAuth("ADMIN"), (req: Request<UserParams>, res, next) => {
   userController.getUserByEmail(req, res, next);
 });
 

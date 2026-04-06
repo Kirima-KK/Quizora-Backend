@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import authConfig from "../config/auth.config.js";
 import jwt from 'jsonwebtoken';
-import { LoginInfo, RegisterInfo } from "../utils/auth.type.js";
+import { LoginInfo, RegisterInfo } from "../interfaces/auth.interface.js";
 import InvalidCredentialError from "../errors/invalid-credential.error.js";
 import UserAlreadyExistError from "../errors/user-already-exist.error.js";
 import User from "../models/user.model.js";
@@ -38,7 +38,7 @@ class AuthService {
       }
     };
 
-    const secret = authConfig.jwtSecret;
+    const secret = authConfig.jwtSecret!;
     const options = { expiresIn: Number(authConfig.jwtTokenExpires) };
 
     const token = jwt.sign(payload, secret, options);
@@ -63,7 +63,7 @@ class AuthService {
       email: user.email,
       role: user.role,
     }
-    const secret = authConfig.jwtSecret;
+    const secret = authConfig.jwtSecret!;
     const options = { expiresIn: Number(authConfig.jwtTokenExpires) };
 
     const token = jwt.sign(payload, secret, options);
