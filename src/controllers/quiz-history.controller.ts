@@ -1,9 +1,11 @@
+import { Request, Response, NextFunction } from "express";
 import QuizHistoryService from "../services/quiz-history.service.js";
+import { QuizParams } from "../interfaces/quiz.interface.js";
 
 const quizHistoryService = new QuizHistoryService();
 
 class QuizHistoryController {
-  postNewQuizHistory = async (req, res, next) => {
+  postNewQuizHistory = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const newHistory = await quizHistoryService.postNewQuizHistory(req.body);
 
@@ -16,7 +18,7 @@ class QuizHistoryController {
     }
   }
 
-  getQuizHistoryByUserId = async (req, res, next) => {
+  getQuizHistoryByUserId = async (req: Request<QuizParams>, res: Response, next: NextFunction) => {
     try {
       const quizHistories = await quizHistoryService.getQuizHistoryByUserId(req.params);
 

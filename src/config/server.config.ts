@@ -9,7 +9,7 @@ const serverConfig = {
     'http://localhost:3000',
     'https://quizora-backend.vercel.app',
     'https://quizora-seven.vercel.app',
-    /\.vercel\.app$/
+    /^https:\/\/.*\.vercel\.app$/
   ],
 };
 

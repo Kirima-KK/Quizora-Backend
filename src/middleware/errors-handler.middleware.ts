@@ -1,4 +1,6 @@
-const ErrorHandler = (err, req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+const ErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
 
   // Show error based on status code or 500 for default error status code

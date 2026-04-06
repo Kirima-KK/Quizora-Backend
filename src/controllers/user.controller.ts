@@ -1,9 +1,11 @@
+import { UserParams } from "../interfaces/user.interface.js";
 import UserService from "../services/user.service.js";
+import { Request, Response, NextFunction } from "express";
 
 const userService = new UserService();
 
 class UserController {
-  getAllUsers = async (req, res, next) => {
+  getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const users = await userService.getAllUsers();
 
@@ -14,7 +16,7 @@ class UserController {
     }
   }
 
-  getUserByEmail = async (req, res, next) => {
+  getUserByEmail = async (req: Request<UserParams>, res: Response, next: NextFunction) => {
     try {
       const email = req.params.email;
 
@@ -27,7 +29,7 @@ class UserController {
     }
   }
 
-  getCurrentUser = async (req, res, next) => {
+  getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Get current user from the cookie
       const session = req.cookies.session;
