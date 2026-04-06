@@ -8,9 +8,7 @@ class QuizService {
     // Calculated quiz pages
     const itemPerPage = page ? Number(mongoDB.itemPerPage) : 0;
     const offset = ((page - 1) * itemPerPage);
-    const total = await Quiz.countDocuments({});
-    const totalPages = page ? Math.ceil(total / itemPerPage) : 1;
-
+    
     // filtered quizes
     let filter: any = {};
     if (query) {
@@ -21,6 +19,10 @@ class QuizService {
         ]
       }
     }
+
+    // Get total pages
+    const total = await Quiz.countDocuments(filter);
+    const totalPages = page ? Math.ceil(total / itemPerPage) : 1;
 
     // Find quiz in the current page
     const quizes = await Quiz.find(filter)
