@@ -1,10 +1,11 @@
 import authConfig from "../config/auth.config.js";
-import { LoginInfo, RegisterInfo } from "../utils/auth.type.js";
+import { LoginInfo, RegisterInfo } from "../interfaces/auth.interface.js";
 import AuthService from "../services/auth.service.js";
+import { Request, Response, NextFunction } from "express";
 const authService = new AuthService();
 
 class AuthController {
-  register = async (req, res, next) => {
+  register = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result: RegisterInfo = {
         email: req.body.email,
@@ -27,7 +28,7 @@ class AuthController {
     }
   }
 
-  login = async (req, res, next) => {
+  login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;
       const result: LoginInfo = {
@@ -36,7 +37,7 @@ class AuthController {
       }
 
       const token = await authService.login(result);
-      
+
       // Save user session token to the cookie
       res.cookie('session', token, {
         httpOnly: true,
@@ -57,7 +58,7 @@ class AuthController {
     }
   }
 
-  logout = async (req, res, next) => {
+  logout = async (req: Request, res: Response, next: NextFunction) => {
     // Remove user session token from the cookie
     res.cookie('session', '', {
       expires: new Date(0),

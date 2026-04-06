@@ -1,3 +1,5 @@
+import { ParamsDictionary } from "express-serve-static-core";
+
 export interface Choice {
   id: number;
   choice: string;
@@ -17,4 +19,8 @@ export interface QuizInfo {
   image: string;
   passPoint: number;
   questions: Question[];
+}
+
+export interface QuizParams extends ParamsDictionary {
+  id: string
 }

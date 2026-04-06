@@ -1,10 +1,12 @@
 import QuizService from "../services/quiz.service.js";
+import { Request, Response, NextFunction } from "express";
+import { QuizParams } from "../interfaces/quiz.interface.js";
 
 const quizService = new QuizService();
 
 class QuizController {
-  getAllQuiz = async (req, res, next) => {
-    const page = req.query.page;
+  getAllQuiz = async (req: Request, res: Response, next: NextFunction) => {
+    const page = Number(req.query.page);
 
     try {
       const quizInfo = await quizService.getAllQuiz(page);
@@ -18,7 +20,7 @@ class QuizController {
     }
   }
 
-  getQuizById = async (req, res, next) => {
+  getQuizById = async (req: Request<QuizParams>, res: Response, next: NextFunction) => {
     try {
       const quiz = await quizService.getQuizById(req.params);
 
