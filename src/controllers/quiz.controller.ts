@@ -7,9 +7,10 @@ const quizService = new QuizService();
 class QuizController {
   getAllQuiz = async (req: Request, res: Response, next: NextFunction) => {
     const page = Number(req.query.page);
+    const query = String(req.query.query || '');
 
     try {
-      const quizInfo = await quizService.getAllQuiz(page);
+      const quizInfo = await quizService.getAllQuiz(page, query);
 
       return res.status(200).json({
         quizes: quizInfo.quizes,
@@ -18,7 +19,7 @@ class QuizController {
     } catch (err) {
       next(err);
     }
-  }
+  };
 
   getQuizById = async (req: Request<QuizParams>, res: Response, next: NextFunction) => {
     try {
@@ -28,7 +29,7 @@ class QuizController {
     } catch (err) {
       next(err);
     }
-  }
+  };
 }
 
 export default QuizController;
