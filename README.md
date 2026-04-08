@@ -1,4 +1,4 @@
-# Quizora - RESTful API
+# Quizora - Backend Service
 
 ## 📖 Project Overview
 A robust, headless **RESTful API** built with **Express.js**, serving as the core engine for a decoupled full-stack ecosystem. This project demonstrates a secure approach to backend architecture, engineered to handle cross-origin requests from a **Next.js** frontend while ensuring data integrity and strict access control.
