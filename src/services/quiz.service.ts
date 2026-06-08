@@ -7,8 +7,9 @@ class QuizService {
   getAllQuiz = async (page: number, query?: string) => {
     // Calculated quiz pages
     const itemPerPage = page ? Number(mongoDB.itemPerPage) : 0;
-    const offset = ((page - 1) * itemPerPage);
-    
+    let offset = ((page - 1) * itemPerPage);
+    if (offset <= 0) offset = 0;
+
     // filtered quizes
     let filter: any = {};
     if (query) {
