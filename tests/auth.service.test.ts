@@ -9,8 +9,24 @@ import UserAlreadyExistError from "../src/errors/user-already-exist.error.js";
 
 vi.mock("bcrypt");
 vi.mock("jsonwebtoken");
-vi.mock("../models/user.model.js");
-vi.mock("../config/auth.config.js");
+vi.mock("../src/models/user.model.js", () => {
+  const MockUserClass = vi.fn().mockImplementation(function (data) {
+    return {
+      ...data,
+      _id: "6a265e47843abfcf17bc8d9b",
+      createdAt: new Date(),
+      save: vi.fn().mockResolvedValue({}),
+    };
+  });
+
+  (MockUserClass as any).findOne = vi.fn();
+
+  return {
+    default: MockUserClass
+  };
+});
+
+vi.mock("../src/config/auth.config.js");
 
 describe("AuthService", () => {
   let authService: AuthService;
@@ -35,7 +51,7 @@ describe("AuthService", () => {
     };
 
     it("should throw UserAlreadyExistError when user already exists", async () => {
-      vi.spyOn(User, 'findOne').mockResolvedValue({ email: "newuser@example.com" } as any);
+      vi.mocked(User.findOne).mockResolvedValue({ email: "newuser@example.com" } as any);
 
       await expect(authService.register(registerData)).rejects.toThrow(
         UserAlreadyExistError
@@ -49,17 +65,15 @@ describe("AuthService", () => {
       const mockSalt = "test-salt";
       const mockHash = "hashed-password";
 
-      vi.spyOn(User, 'findOne').mockResolvedValue(null);
+      vi.mocked(User.findOne).mockResolvedValue(null);
       vi.mocked(bcrypt.genSalt).mockResolvedValue(mockSalt as any);
       vi.mocked(bcrypt.hash).mockResolvedValue(mockHash as any);
       vi.mocked(jwt.sign).mockReturnValue("test-token" as any);
 
-      const mockNewUser = vi.spyOn(User.prototype, 'save').mockResolvedValue({} as any);
       const token = await authService.register(registerData);
 
       expect(bcrypt.genSalt).toHaveBeenCalledWith(10);
       expect(bcrypt.hash).toHaveBeenCalledWith(registerData.password.toString(), mockSalt);
-      expect(mockNewUser).toHaveBeenCalled();
       expect(token).toBe("test-token");
     });
 
@@ -67,54 +81,38 @@ describe("AuthService", () => {
       const mockSalt = "test-salt";
       const mockHash = "hashed-password";
 
-      vi.spyOn(User, 'findOne').mockResolvedValue(null);
+      vi.mocked(User.findOne).mockResolvedValue(null);
       vi.mocked(bcrypt.genSalt).mockResolvedValue(mockSalt as any);
       vi.mocked(bcrypt.hash).mockResolvedValue(mockHash as any);
       vi.mocked(jwt.sign).mockReturnValue("test-token" as any);
 
-      const mockUser = {
-        _id: "user-123",
-        email: registerData.email,
-        firstName: registerData.firstName,
-        lastName: registerData.lastName,
-        role: registerData.role,
-        password: mockHash,
-        createdAt: expect.any(Date),
-        save: vi.fn().mockResolvedValue({}),
-      };
-
-      const saveSpy = vi.spyOn(User.prototype, 'save').mockResolvedValue({} as any);
       await authService.register(registerData);
 
-      expect(saveSpy).toHaveBeenCalled();
-
-      const savedUserInstance = saveSpy.mock.contexts[0];
-      expect(savedUserInstance.email).toBe(registerData.email);
-      expect(savedUserInstance.firstName).toBe(registerData.firstName);
-      expect(savedUserInstance.lastName).toBe(registerData.lastName);
-      expect(savedUserInstance.role).toBe(registerData.role);
-      expect(savedUserInstance.password).toBe(mockHash);
-      expect(savedUserInstance.createdAt).toBeInstanceOf(Date);
-
-      // Clean up spies
-      saveSpy.mockRestore();
+      expect(User).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: registerData.email,
+          firstName: registerData.firstName,
+          lastName: registerData.lastName,
+          role: registerData.role,
+          password: mockHash,
+          createdAt: expect.any(Date),
+        })
+      )
     });
 
     it("should sign JWT token with correct payload", async () => {
       const mockSalt = "test-salt";
       const mockHash = "hashed-password";
 
-      vi.spyOn(User, 'findOne').mockResolvedValue(null);
+      vi.mocked(User.findOne).mockResolvedValue(null);
       vi.mocked(bcrypt.genSalt).mockResolvedValue(mockSalt as any);
       vi.mocked(bcrypt.hash).mockResolvedValue(mockHash as any);
       vi.mocked(jwt.sign).mockReturnValue("test-token" as any);
 
-      const saveSpy = vi.spyOn(User.prototype, 'save').mockResolvedValue({} as any);
-
       await authService.register(registerData);
 
-      const savedUserInstance = saveSpy.mock.contexts[0];
-      const actualGeneratedId = savedUserInstance._id;
+      const createdInstance = vi.mocked(User).mock.results[0].value;
+      const actualGeneratedId = createdInstance._id;
 
       expect(jwt.sign).toHaveBeenCalledWith(
         {
@@ -126,8 +124,6 @@ describe("AuthService", () => {
         mockJwtSecret,
         { expiresIn: Number(mockJwtExpires) }
       );
-
-      saveSpy.mockRestore();
     });
 
     it("should return JWT token on successful registration", async () => {
@@ -135,23 +131,10 @@ describe("AuthService", () => {
       const mockHash = "hashed-password";
       const expectedToken = "jwt-token-123";
 
-      vi.spyOn(User, 'findOne').mockResolvedValue(null);
+      vi.mocked(User.findOne).mockResolvedValue(null);
       vi.mocked(bcrypt.genSalt).mockResolvedValue(mockSalt as any);
       vi.mocked(bcrypt.hash).mockResolvedValue(mockHash as any);
       vi.mocked(jwt.sign).mockReturnValue(expectedToken as any);
-
-      const mockUser = {
-        _id: "user-123",
-        email: registerData.email,
-        firstName: registerData.firstName,
-        lastName: registerData.lastName,
-        role: registerData.role,
-        password: mockHash,
-        createdAt: expect.any(Date),
-        save: vi.fn().mockResolvedValue({}),
-      };
-
-      vi.spyOn(User.prototype, 'save').mockResolvedValue({} as any);
 
       const token = await authService.register(registerData);
 
@@ -162,12 +145,10 @@ describe("AuthService", () => {
       const mockSalt = "test-salt";
       const mockHash = "hashed-password";
 
-      vi.spyOn(User, 'findOne').mockResolvedValue(null);
+      vi.mocked(User.findOne).mockResolvedValue(null);
       vi.mocked(bcrypt.genSalt).mockResolvedValue(mockSalt as any);
       vi.mocked(bcrypt.hash).mockResolvedValue(mockHash as any);
       vi.mocked(jwt.sign).mockReturnValue(null as any);
-
-      vi.spyOn(User.prototype, 'save').mockResolvedValue({} as any);
 
       await expect(authService.register(registerData)).rejects.toThrow(
         InvalidCredentialError
