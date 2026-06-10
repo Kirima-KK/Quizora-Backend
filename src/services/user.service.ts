@@ -15,7 +15,7 @@ class UserService {
     return user;
   };
 
-  getCurrentUser = async (session) => {
+  getCurrentUser = async (session: string | undefined) => {
     // Current session token validation
     const payload = session ? await verifyJwt(session) : null;
     if (!payload) {
