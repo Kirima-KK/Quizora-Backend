@@ -3,6 +3,8 @@ import { ObjectId } from "mongodb";
 import User from "../models/user.model.js";
 import UnauthenticatedError from "../errors/unauthenticated.error.js";
 import UserNotFoundError from "../errors/user-not-found.error.js";
+import { withCache, invalidateCache } from "../utils/cache.util.js";
+import redisConfig from "../config/redis.config.js";
 
 class UserService {
   getAllUsers = async () => {
@@ -11,22 +13,46 @@ class UserService {
   }
 
   getUserByEmail = async (email: string) => {
-    const user = await User.findOne({ email: email });
-    return user;
+    const cacheKey = `user:email:${email}`;
+
+    return withCache(cacheKey, async () => {
+      const user = await User.findOne({ email: email });
+      return user;
+    }, redisConfig.ttl.user);
   };
 
-  getCurrentUser = async (session: string | undefined) => {
+  getCurrentUser = async (sessionToken: string | undefined) => {
     // Current session token validation
-    const payload = session ? await verifyJwt(session) : null;
+    const payload = sessionToken ? await verifyJwt(sessionToken) : null;
     if (!payload) {
       throw new UnauthenticatedError("Unauthenticated.", 401);
     }
 
     const userId: string = payload?.payload.userId;
-    const user = await User.findOne({ _id: new ObjectId(userId) });
-    if (!user) throw new UserNotFoundError("User not found.", 404);
+    const cacheKey = `user:${userId}`;
 
-    return user;
+    return withCache(cacheKey, async () => {
+      const user = await User.findOne({ _id: new ObjectId(userId) });
+      if (!user) throw new UserNotFoundError("User not found.", 404);
+
+      return user;
+    }, redisConfig.ttl.user);
+  }
+
+  /**
+   * Invalidate user cache
+   * Called after user profile updates
+   */
+  invalidateUserCache = async (userId: string) => {
+    await invalidateCache(`user:${userId}`);
+  }
+
+  /**
+   * Invalidate user email cache
+   * Called after email updates
+   */
+  invalidateUserEmailCache = async (email: string) => {
+    await invalidateCache(`user:email:${email}`);
   }
 }
 

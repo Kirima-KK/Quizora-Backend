@@ -4,6 +4,8 @@ import { QuizHistoryItem, UserQuizAnswer } from "../utils/quiz-history.type.js";
 import QuizHistory from "../models/quiz-history.model.js";
 import User from "../models/user.model.js";
 import mongoDB from "../config/db.config.js";
+import { withCache, invalidateCache } from "../utils/cache.util.js";
+import redisConfig from "../config/redis.config.js";
 
 class QuizHistoryService {
   postNewQuizHistory = async (data: QuizHistoryItem) => {
@@ -42,16 +44,30 @@ class QuizHistoryService {
       { returnDocument: 'after' }
     );
 
+    // Invalidate quiz history cache for this user
+    await invalidateCache(`history:${data.userId}`);
+
     return newHistory;
   }
 
   getQuizHistoryByUserId = async (params: { id: string }) => {
-    const histories = await QuizHistory.find({ userId: params.id });
-    const itemPerPage = Number(mongoDB.itemPerPage);
-    const historyQuizIds = [...new Set(histories.map(history => history.quizId))];
-    const totalPages = Math.ceil(historyQuizIds.length / itemPerPage);
+    const cacheKey = `history:${params.id}`;
 
-    return { quizHistory: histories, totalPages: totalPages };
+    return withCache(cacheKey, async () => {
+      const histories = await QuizHistory.find({ userId: params.id });
+      const itemPerPage = Number(mongoDB.itemPerPage);
+      const historyQuizIds = [...new Set(histories.map(history => history.quizId))];
+      const totalPages = Math.ceil(historyQuizIds.length / itemPerPage);
+
+      return { quizHistory: histories, totalPages: totalPages };
+    }, redisConfig.ttl.history);
+  }
+
+  /**
+   * Invalidate quiz history cache for a user
+   */
+  invalidateUserHistory = async (userId: string) => {
+    await invalidateCache(`history:${userId}`);
   }
 }
 

@@ -16,7 +16,6 @@ export interface LoginInfo {
 export interface AuthRequest extends Request {
   user?: {
     userId: string;
-    email: string;
     role: string;
     iat?: number;
     exp?: number;
@@ -25,7 +24,6 @@ export interface AuthRequest extends Request {
 
 export interface JwtPayload {
   userId: string;
-  email: string;
   role: string;
   iat?: number;
   exp?: number;

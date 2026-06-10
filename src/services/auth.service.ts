@@ -60,7 +60,6 @@ class AuthService {
     // Signed JWT token
     const payload = {
       userId: user._id,
-      email: user.email,
       role: user.role,
     }
     const secret = authConfig.jwtSecret!;

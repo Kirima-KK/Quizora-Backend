@@ -1,8 +1,11 @@
-import authConfig from "../config/auth.config.js";
 import { LoginInfo, RegisterInfo } from "../interfaces/auth.interface.js";
 import AuthService from "../services/auth.service.js";
-import { Request, Response, NextFunction } from "express";
+import UserService from "../services/user.service.js";
+import { createSession, destroySession } from "../services/session.service.js";
+import { Request, Response, NextFunction, CookieOptions } from "express";
+import authConfig from "../config/auth.config.js";
 const authService = new AuthService();
+const userService = new UserService();
 
 class AuthController {
   register = async (req: Request, res: Response, next: NextFunction) => {
@@ -36,15 +39,40 @@ class AuthController {
         password: password
       }
 
+      // Authenticate user
       const token = await authService.login(result);
 
-      // Save user session token to the cookie
-      res.cookie('session', token, {
+      // Get user data for session creation
+      const user = await userService.getUserByEmail(email);
+
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Create Redis session
+      const sessionId = await createSession(user._id.toString(), user.role);
+
+      if (!sessionId) {
+        return res.status(500).json({ message: "Failed to create session" });
+      }
+
+      const cookieOptions: CookieOptions = {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: Number(authConfig.jwtTokenExpires),
         path: '/',
+      };
+
+      // Store JWT in 'sessionToken' cookie
+      res.cookie('sessionToken', token, {
+        ...cookieOptions,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      });
+
+      // Store Redis ID in 'sessionId' cookie
+      res.cookie('sessionId', sessionId, {
+        ...cookieOptions,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
       });
 
       return res.status(200).json({
@@ -59,15 +87,26 @@ class AuthController {
   }
 
   logout = async (req: Request, res: Response, next: NextFunction) => {
-    // Remove user session token from the cookie
-    res.cookie('session', '', {
-      expires: new Date(0),
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      path: '/',
-    });
-    return res.status(204).send();
+    try {
+      const sessionId = req.cookies.sessionId;
+
+      if (sessionId) await destroySession(sessionId);
+
+      const clearOptions: CookieOptions = {
+        expires: new Date(0),
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        path: '/',
+      };
+
+      res.cookie('sessionToken', '', clearOptions);
+      res.cookie('sessionId', '', clearOptions);
+
+      return res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
   }
 }
 

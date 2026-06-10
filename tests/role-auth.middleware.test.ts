@@ -30,7 +30,7 @@ describe("roleAuth middleware", () => {
   });
 
   it("should return 403 when user role is not in allowed roles", () => {
-    mockReq.user = { userId: "123", email: "student@example.com", role: "student" };
+    mockReq.user = { userId: "123", role: "student" };
     const middleware = roleAuth("admin", "teacher");
 
     middleware(mockReq as AuthRequest, mockRes as Response, mockNext);
@@ -41,7 +41,7 @@ describe("roleAuth middleware", () => {
   });
 
   it("should call next when user role is in allowed roles", () => {
-    mockReq.user = { userId: "456", email: "admin@example.com", role: "admin" };
+    mockReq.user = { userId: "456", role: "admin" };
     const middleware = roleAuth("admin", "teacher");
 
     middleware(mockReq as AuthRequest, mockRes as Response, mockNext);
@@ -52,7 +52,7 @@ describe("roleAuth middleware", () => {
   });
 
   it("should call next when user role matches single allowed role", () => {
-    mockReq.user = { userId: "789", email: "teacher@example.com", role: "teacher" };
+    mockReq.user = { userId: "789", role: "teacher" };
     const middleware = roleAuth("teacher");
 
     middleware(mockReq as AuthRequest, mockRes as Response, mockNext);
@@ -62,7 +62,7 @@ describe("roleAuth middleware", () => {
   });
 
   it("should call next when user role matches any of multiple allowed roles", () => {
-    mockReq.user = { userId: "101", email: "moderator@example.com", role: "moderator" };
+    mockReq.user = { userId: "101", role: "moderator" };
     const middleware = roleAuth("admin", "moderator", "teacher");
 
     middleware(mockReq as AuthRequest, mockRes as Response, mockNext);
@@ -72,7 +72,7 @@ describe("roleAuth middleware", () => {
   });
 
   it("should be case-sensitive when matching roles", () => {
-    mockReq.user = { userId: "102", email: "user@example.com", role: "Admin" };
+    mockReq.user = { userId: "102", role: "Admin" };
     const middleware = roleAuth("admin");
 
     middleware(mockReq as AuthRequest, mockRes as Response, mockNext);
@@ -93,9 +93,9 @@ describe("roleAuth middleware", () => {
   });
 
   it("should handle error thrown during execution", () => {
-    mockReq.user = { userId: "104", email: "admin@example.com", role: "admin" };
+    mockReq.user = { userId: "104", role: "admin" };
     const testError = new Error("Test error");
-    
+
     // Mock next to throw an error
     vi.mocked(mockNext).mockImplementation(() => {
       throw testError;
@@ -109,9 +109,9 @@ describe("roleAuth middleware", () => {
   });
 
   it("should pass error to next when exception occurs", () => {
-    mockReq.user = { userId: "105", email: "admin@example.com", role: "admin" };
+    mockReq.user = { userId: "105", role: "admin" };
     const testError = new Error("Unexpected error");
-    
+
     // Override next to throw error
     vi.clearAllMocks();
     mockNext = vi.fn(() => {
@@ -126,7 +126,7 @@ describe("roleAuth middleware", () => {
   });
 
   it("should work with empty allowed roles array", () => {
-    mockReq.user = { userId: "106", email: "admin@example.com", role: "admin" };
+    mockReq.user = { userId: "106", role: "admin" };
     const middleware = roleAuth();
 
     middleware(mockReq as AuthRequest, mockRes as Response, mockNext);
@@ -153,7 +153,7 @@ describe("roleAuth middleware", () => {
   });
 
   it("should return correct response and not call next on authorization failure", () => {
-    mockReq.user = { userId: "108", email: "student@example.com", role: "student" };
+    mockReq.user = { userId: "108", role: "student" };
     const middleware = roleAuth("admin");
 
     middleware(mockReq as AuthRequest, mockRes as Response, mockNext);
