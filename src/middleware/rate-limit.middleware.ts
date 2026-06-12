@@ -44,7 +44,7 @@ export const createRateLimitMiddleware = (options: RateLimitOptions) => {
  * Key generator for IP-based rate limiting
  */
 export const ipKeyGenerator = (req: Request): string => {
-  return req.ip || req.socket.remoteAddress || "unknown";
+  return req.ip || req.socket?.remoteAddress || "unknown";
 };
 
 /**
