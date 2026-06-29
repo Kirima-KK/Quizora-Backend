@@ -1,17 +1,9 @@
 import express from 'express';
 import AuthController from '../controllers/auth.controller.js';
-import { createRateLimitMiddleware, ipKeyGenerator } from '../middleware/rate-limit.middleware.js';
-import { rateLimitConfig } from '../config/rate-limit.config.js';
+import { publicRateLimiter } from '../middleware/rate-limit.middleware.js';
 
 const router = express.Router();
 const authController = new AuthController();
-
-const publicRateLimiter = createRateLimitMiddleware({
-  keyGenerator: ipKeyGenerator,
-  limit: rateLimitConfig.publicEndpoints.limit,
-  windowMs: rateLimitConfig.publicEndpoints.windowMs,
-  message: 'Too many authentication requests. Please try again in a minute.',
-});
 
 router.post('/api/register', publicRateLimiter, (req, res, next) => {
   authController.register(req, res, next)
