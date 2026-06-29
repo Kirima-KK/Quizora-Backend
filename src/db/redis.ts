@@ -1,37 +1,31 @@
-import { createClient, RedisClientType } from 'redis';
+import { Redis } from '@upstash/redis';
 import redisConfig from '../config/redis.config.js';
 
-let redisClient: RedisClientType | null = null;
-let isConnected = false;
+let redisClient: Redis | null = null;
 
-export const initializeRedis = async () => {
+export const initializeRedis = () => {
   try {
-    redisClient = createClient({
+    if (!redisConfig.url || !redisConfig.token) {
+      console.warn('Upstash Redis credentials not configured — caching disabled');
+      return;
+    }
+
+    redisClient = new Redis({
       url: redisConfig.url,
-      ...redisConfig.options,
-    }) as RedisClientType;
+      token: redisConfig.token,
+    });
 
-    redisClient.on('error', (err) => console.error('Redis Client Error:', err));
-    redisClient.on('connect', () => console.log('Redis Client Connected'));
-    redisClient.on('reconnecting', () => console.log('Redis Client Reconnecting'));
-
-    await redisClient.connect();
-    isConnected = true;
-    console.log('Redis initialized and connected');
+    console.log('Upstash Redis client initialized');
   } catch (error) {
-    console.error('Failed to initialize Redis:', error);
-    isConnected = false;
+    console.error('Failed to initialize Upstash Redis:', error);
+    redisClient = null;
   }
 };
 
-export const getRedisClient = (): RedisClientType | null => redisClient;
+export const getRedisClient = (): Redis | null => redisClient;
 
-export const isRedisConnected = (): boolean => isConnected;
+export const isRedisConnected = (): boolean => redisClient !== null;
 
-export const closeRedis = async () => {
-  if (redisClient) {
-    await redisClient.quit();
-    isConnected = false;
-    console.log('Redis connection closed');
-  }
+export const closeRedis = () => {
+  redisClient = null;
 };

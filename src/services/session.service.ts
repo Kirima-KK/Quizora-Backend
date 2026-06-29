@@ -8,12 +8,6 @@ export interface SessionData {
   createdAt: string;
 }
 
-/**
- * Create a new session in Redis
- * @param userId User ID
- * @param role User role
- * @returns Session ID or null
- */
 export const createSession = async (
   userId: string,
   role: string
@@ -32,9 +26,7 @@ export const createSession = async (
     };
 
     const key = `session:${sessionId}`;
-    const ttl = redisConfig.ttl.session;
-
-    await client.setEx(key, ttl, JSON.stringify(sessionData));
+    await client.set(key, sessionData, { ex: redisConfig.ttl.session });
 
     return sessionId;
   } catch (error) {
@@ -43,11 +35,6 @@ export const createSession = async (
   }
 };
 
-/**
- * Get session data from Redis
- * @param sessionId Session ID
- * @returns Session data or null
- */
 export const getSession = async (sessionId: string): Promise<SessionData | null> => {
   if (!isRedisConnected()) return null;
 
@@ -56,21 +43,15 @@ export const getSession = async (sessionId: string): Promise<SessionData | null>
     if (!client) return null;
 
     const key = `session:${sessionId}`;
-    const data = await client.get(key);
+    const data = await client.get<SessionData>(key);
 
-    if (!data) return null;
-
-    return JSON.parse(data) as SessionData;
+    return data ?? null;
   } catch (error) {
     console.error(`Error getting session ${sessionId}:`, error);
     return null;
   }
 };
 
-/**
- * Delete a session from Redis
- * @param sessionId Session ID
- */
 export const destroySession = async (sessionId: string): Promise<boolean> => {
   if (!isRedisConnected()) return false;
 
@@ -88,10 +69,6 @@ export const destroySession = async (sessionId: string): Promise<boolean> => {
   }
 };
 
-/**
- * Extend session TTL (refresh session)
- * @param sessionId Session ID
- */
 export const refreshSession = async (sessionId: string): Promise<boolean> => {
   if (!isRedisConnected()) return false;
 
@@ -100,15 +77,10 @@ export const refreshSession = async (sessionId: string): Promise<boolean> => {
     if (!client) return false;
 
     const key = `session:${sessionId}`;
-    const ttl = redisConfig.ttl.session;
+    const exists = await client.exists(key);
+    if (!exists) return false;
 
-    // Get current session data
-    const data = await client.get(key);
-    if (!data) return false;
-
-    // Re-set with new TTL
-    await client.setEx(key, ttl, data);
-
+    await client.expire(key, redisConfig.ttl.session);
     return true;
   } catch (error) {
     console.error(`Error refreshing session ${sessionId}:`, error);

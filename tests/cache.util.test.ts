@@ -8,16 +8,14 @@ import {
 } from '../src/utils/cache.util.js';
 import { initializeRedis, closeRedis } from '../src/db/redis.js';
 
-// Mock the Redis database module
 vi.mock('../src/db/redis.js', () => {
-  const mockStore = new Map<string, string>();
+  const mockStore = new Map<string, unknown>();
   const mockClient = {
-    get: vi.fn(async (key: string) => mockStore.get(key) || null),
-    set: vi.fn(async (key: string, val: string) => { mockStore.set(key, val); }),
-    setEx: vi.fn(async (key: string, _ttl: number, val: string) => { mockStore.set(key, val); }),
-    del: vi.fn(async (key: string | string[]) => {
-      if (Array.isArray(key)) key.forEach(k => mockStore.delete(k));
-      else mockStore.delete(key);
+    get: vi.fn(async (key: string) => mockStore.get(key) ?? null),
+    set: vi.fn(async (key: string, val: unknown) => { mockStore.set(key, val); }),
+    del: vi.fn(async (...keys: string[]) => {
+      keys.forEach(k => mockStore.delete(k));
+      return keys.length;
     }),
     keys: vi.fn(async () => Array.from(mockStore.keys())),
   };
@@ -47,7 +45,6 @@ describe('Cache Utility', () => {
 
     expect(cached).toEqual(value);
 
-    // Cleanup
     await invalidateCache(key);
   });
 
@@ -76,16 +73,13 @@ describe('Cache Utility', () => {
       return { value: 'computed', count: executionCount };
     };
 
-    // First call - should execute function
     const result1 = await withCache(key, asyncFn, 60);
     expect(result1.count).toBe(1);
 
-    // Second call - should use cache
     const result2 = await withCache(key, asyncFn, 60);
-    expect(result2.count).toBe(1); // Still 1, not 2
+    expect(result2.count).toBe(1);
     expect(result2).toEqual(result1);
 
-    // Cleanup
     await invalidateCache(key);
   });
 

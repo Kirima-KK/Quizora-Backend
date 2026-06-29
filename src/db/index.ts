@@ -11,8 +11,7 @@ export const connectToDatabase = async () => {
 
     console.log(`Database Connected: ${connect.connection.host}, ${connect.connection.name}`);
 
-    // Initialize Redis
-    await initializeRedis();
+    initializeRedis();
   } catch (err) {
     console.log(err);
     process.exit(1);
