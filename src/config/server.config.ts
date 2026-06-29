@@ -7,6 +7,7 @@ const serverConfig = {
   port: process.env.PORT || 3001,
   allowedOrigins: [
     'http://localhost:3000',
+    'http://localhost:3001',
     'https://quizora-backend.vercel.app',
     'https://quizora-seven.vercel.app',
     /^https:\/\/.*\.vercel\.app$/

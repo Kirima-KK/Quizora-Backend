@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
 
 import serverConfig from './config/server.config.js';
+import swaggerSpec from './config/swagger.config.js';
 import { connectToDatabase } from './db/index.js';
 
 import userRoutes from './routes/user.route.js';
@@ -40,6 +42,8 @@ await connectToDatabase();
 app.use(express.json());
 app.use(cookieParser());
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Mount the routes
 app.use(authRoutes);
 app.use(userRoutes);
@@ -49,7 +53,7 @@ app.use(quizHistoryRoutes);
 // Error handler middleware
 app.use(ErrorHandler);
 
-app.use('/', (req, res, next) => {
+app.get('/', (req, res) => {
   res.send("Hello Quizora!");
 });
 
